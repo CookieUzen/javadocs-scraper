@@ -77,7 +77,6 @@ def add_tags(list):
 
 # Function to delete override tags
 def delete_override(list):
-    tags = ''
     i = 0
     while i < len(list):
         # Skip empty lines
@@ -89,9 +88,13 @@ def delete_override(list):
         if list[i] == "Overrides:":
             list.pop(i)
             list.pop(i)
-            return True
-        else:
-            i += 1
+
+        # Check for specify by
+        if list[i] == "Specified by:":
+            list.pop(i)
+            list.pop(i)
+
+        i += 1
 
     return False
 
