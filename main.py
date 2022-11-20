@@ -28,6 +28,8 @@ def squish(array):
     array = array.replace("\xa0", " ")
     array = array.replace("\n", "")
     array = array.replace("\r","")
+    array = array.replace("\t"," ")
+    array = array.replace("    ","")
     return array
 
 # Function to parse BS Array to list
@@ -56,22 +58,21 @@ def add_tags(list):
         
         # Check for parameters
         # Parameters, Returns, Throws
-        if list[i] == "Parameters:":
-            list.insert(i, "")
+        if "Parameters:" in list[i]:
+            list[i] = ""
             i += 1
             tags = "@param "
-        elif list[i] == "Returns:":
-            list.insert(i, "")
+        elif "Returns:" in list[i]:
+            list[i] = ""
             i += 1
             tags = "@return "
-        elif list[i] == "Throws:":
-            list.insert(i, "")
+        elif "Throws:" in list[i] :
+            list[i] = ""
             i += 1
             tags = "@throws "
         else:
             list[i] = tags + list[i]
-
-        i += 1
+            i += 1
     
     return list
 
@@ -134,9 +135,7 @@ classDescription = class_java.find("div", {"class": className})
 if classDescription is None:
     classDescription = class_java.find("div", {"class": "block"})
 
-classDescription = classDescription.string
-
-classDescription = parse(classDescription)
+classDescription = parse(classDescription.find_all(text=True))
 
 # Make the javadocs for class
 print(create_javadocs(classDescription, 0))
@@ -201,10 +200,8 @@ if constructor is not None:
     else:
         constructorParameters = []
 
-    # Add @param to parameters
-    for i in range(len(constructorParameters)):
-          if constructorParameters[i] != "" and constructorParameters[i] != "Parameters:":
-            constructorParameters[i] = "@param " + constructorParameters[i]
+    # Add @tags to parameters
+    constructorParameters = add_tags(constructorParameters)
 
     # Print javadocs for constructor
     print(create_javadocs(constructorDescription + constructorParameters, 1))
@@ -241,6 +238,8 @@ for loopFunction in functions.contents:
 
     # Get the loopFunction parameters
     loopFunctionParameters = loopFunction.find("dl")
+
+    override = False
 
     # In case function has no parameters
     if loopFunctionParameters is not None:
