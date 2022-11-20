@@ -197,11 +197,12 @@ if constructor is not None:
     # In case there is no parameters
     if constructorParameters is not None:
         constructorParameters = parse(constructorParameters.find_all(text=True))
+
+        # Add @tags to parameters
+        constructorParameters = add_tags(constructorParameters)
     else:
         constructorParameters = []
 
-    # Add @tags to parameters
-    constructorParameters = add_tags(constructorParameters)
 
     # Print javadocs for constructor
     print(create_javadocs(constructorDescription + constructorParameters, 1))
